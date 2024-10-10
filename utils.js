@@ -145,8 +145,10 @@ void main() {
 
 function getChatGPTModelViewMatrix() {
     const transformationMatrix = new Float32Array([
-        // you should paste the response of the chatGPT here:
-
+        0.1767767,  0.3061862,  0.3535534,  0,
+        -0.1913417,  0.4330127, -0.25,       0,
+        -0.3061862,  0.1767767,  0.6123724,  0,
+        0.3,       -0.25,       0,          1
     ]);
     return getTransposeMatrix(transformationMatrix);
 }
