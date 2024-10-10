@@ -160,9 +160,39 @@ function getChatGPTModelViewMatrix() {
  * transformation methods and required transformation parameters
  * stated in transformation-prompt.txt
  */
+function degreesToRadians(degrees) {
+    return degrees * (Math.PI / 180);
+}
+
 function getModelViewMatrix() {
-    // calculate the model view matrix by using the transformation
-    // methods and return the modelView matrix in this method
+
+    // 1. Create the translation matrix
+    const translationMatrix = createTranslationMatrix(0.3, -0.25, 0);
+
+    // 2. Create the scaling matrix
+    const scaleMatrix = createScaleMatrix(0.5, 0.5, 1);
+
+    // 3. Create the rotation matrices
+    const rotationMatrixX = createRotationMatrix_X(degreesToRadians(30)); // 30 degrees on x-axis
+    const rotationMatrixY = createRotationMatrix_Y(degreesToRadians(45)); // 45 degrees on y-axis
+    const rotationMatrixZ = createRotationMatrix_Z(degreesToRadians(60)); // 60 degrees on z-axis
+
+    // 4. Multiply the matrices
+    let transformationMatrix = createIdentityMatrix();  // Start with identity matrix
+
+    // Apply scaling
+    transformationMatrix = multiplyMatrices(transformationMatrix, scaleMatrix);
+
+    // Apply rotations (X -> Y -> Z)
+    transformationMatrix = multiplyMatrices(transformationMatrix, rotationMatrixX);
+    transformationMatrix = multiplyMatrices(transformationMatrix, rotationMatrixY);
+    transformationMatrix = multiplyMatrices(transformationMatrix, rotationMatrixZ);
+
+    // Apply translation
+    transformationMatrix = multiplyMatrices(transformationMatrix, translationMatrix);
+
+
+    return transformationMatrix;
 }
 
 /**
