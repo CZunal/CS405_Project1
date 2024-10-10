@@ -191,7 +191,6 @@ function getModelViewMatrix() {
     // Apply translation
     transformationMatrix = multiplyMatrices(transformationMatrix, translationMatrix);
 
-
     return transformationMatrix;
 }
 
@@ -203,10 +202,43 @@ function getModelViewMatrix() {
  * position to the target position.
  * The next 5 seconds, the cube should return to its initial position.
  */
-function getPeriodicMovement(startTime) {
-    // this metdo should return the model view matrix at the given time
-    // to get a smooth animation
+function lerp(start, end, t) {
+    return start + t * (end - start);
 }
 
+function lerpMatrix(matrixA, matrixB, t) {
+    let result = new Float32Array(16);
+    for (let i = 0; i < 16; i++) {
+        result[i] = lerp(matrixA[i], matrixB[i], t);
+    }
+    return result;
+}
 
+function getPeriodicMovement(startTime) {
+    const currentTime = (Date.now() - startTime) / 1000; // in seconds
+    const period = 10; // 10 seconds for one complete cycle (5s forward, 5s backward)
+    const halfPeriod = period / 2; // 5 seconds to reach the target transformation
 
+    // Normalize the time within the current cycle
+    const timeInCycle = currentTime % period;
+
+    // Compute interpolation factor (t) between 0 and 1
+    let t;
+    if (timeInCycle <= halfPeriod) {
+        // First 5 seconds: Interpolate from initial to target transformation (0 to 1)
+        t = timeInCycle / halfPeriod;
+    } else {
+        // Next 5 seconds: Interpolate from target back to initial (1 to 0)
+        t = (timeInCycle - halfPeriod) / halfPeriod;
+        t = 1 - t; // Reverse interpolation for the second half
+    }
+
+    // Identity matrix (initial position)
+    const identityMatrix = createIdentityMatrix();
+
+    // Target transformation matrix (from task 2)
+    const targetMatrix = getModelViewMatrix(); 
+
+    // Interpolate between the identity matrix and the target matrix
+    return lerpMatrix(identityMatrix, targetMatrix, t);
+}
